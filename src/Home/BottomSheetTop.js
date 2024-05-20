@@ -1,12 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { COLORS } from '../Constant/Constant';
 
 const BottomSheetTop = () => {
   return (
     <View style={styles.container}>
       <View style={styles.leftView}>
         <Text style={styles.leftText}>Target</Text>
-        <Text style={styles.amount}>$200</Text>
+        <Text style={styles.amount}>₦ 7,000,000</Text>
       </View>
       <View style={styles.centerView} />
       <View style={styles.rightView}>
@@ -38,7 +39,7 @@ const styles = StyleSheet.create({
   amount: {
     color: 'white',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   centerView: {
     width: 2,
@@ -59,7 +60,7 @@ const styles = StyleSheet.create({
   progressBar: {
     width: '80%',
     height: 10,
-    backgroundColor: '#4CAF50', // Green color for progress bar
+    backgroundColor: COLORS.color_blue, // Green color for progress bar
     marginTop: 5,
   },
 });

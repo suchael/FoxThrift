@@ -1,109 +1,122 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Animated,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Animated } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { COLORS } from "../Constant/Constant";
 
 const BottomBtn = () => {
-  const [animatedValue] = useState(new Animated.Value(1));
+  const navigation = useNavigation();
+  const [textColor, setTextColor] = useState(false);
+  const [animatedValues, setAnimatedValues] = useState([
+    new Animated.Value(1),
+    new Animated.Value(1),
+    new Animated.Value(1),
+  ]);
 
-  const handlePress = () => {
+  const handlePress = (index) => {
+    const newAnimatedValues = animatedValues.map((value, i) =>
+      i === index ? new Animated.Value(1.2) : new Animated.Value(1)
+    );
+
+    setAnimatedValues(newAnimatedValues);
+
     Animated.sequence([
-      Animated.timing(animatedValue, {
+      Animated.timing(animatedValues[index], {
         toValue: 1.2,
         duration: 100,
         useNativeDriver: true,
       }),
-      Animated.spring(animatedValue, {
+      Animated.spring(animatedValues[index], {
         toValue: 1,
         friction: 4,
         useNativeDriver: true,
       }),
-    ]).start();
+    ]).start(({ finished }) => {
+      if (finished) {
+        // Reset animation value after animation finishes
+        setAnimatedValues((prevValues) =>
+          prevValues.map((value, i) =>
+            i === index ? new Animated.Value(1) : value
+          )
+        );
+      }
+    });
+
+    // Navigate to the corresponding screen
+    const screenToNavigate = buttons[index].to;
+    navigation.navigate(screenToNavigate);
   };
+
+  const buttons = [
+    { icon: "home", text: "Home", to: "Home" },
+    { icon: "person", text: "Profile", to: "Profile" },
+  ];
 
   return (
     <View style={styles.container}>
-      <Animated.View
-        style={[
-          styles.buttonWrapper,
-          { transform: [{ scale: animatedValue }] },
-        ]}
-      >
-        <TouchableOpacity style={styles.button} onPress={handlePress}>
-          <MaterialIcons name="home" size={24} color="black" />
-          <Text style={styles.buttonText}>Home</Text>
+      {buttons.map((button, index) => (
+        <TouchableOpacity
+          key={index}
+          style={styles.button}
+          onPress={() => handlePress(index)}
+        >
+          <Animated.View
+            style={[
+              styles.buttonContent,
+              { transform: [{ scale: animatedValues[index] }] },
+            ]}
+          >
+            <View style={styles.gradient}>
+              <MaterialIcons
+                name={button.icon}
+                size={24}
+                color={COLORS.blackTextColor}
+              />
+              <Text style={styles.buttonText}>{button.text}</Text>
+            </View>
+          </Animated.View>
         </TouchableOpacity>
-      </Animated.View>
-      <Animated.View
-        style={[
-          styles.buttonWrapper,
-          { transform: [{ scale: animatedValue }] },
-        ]}
-      >
-        <TouchableOpacity style={styles.button} onPress={handlePress}>
-          <MaterialIcons name="search" size={24} color="black" />
-          <Text style={styles.buttonText}>Search</Text>
-        </TouchableOpacity>
-      </Animated.View>
-      <Animated.View
-        style={[
-          styles.buttonWrapper,
-          { transform: [{ scale: animatedValue }] },
-        ]}
-      >
-        <TouchableOpacity style={styles.button} onPress={handlePress}>
-          <MaterialIcons name="person" size={24} color="black" />
-          <Text style={styles.buttonText}>Profile</Text>
-        </TouchableOpacity>
-      </Animated.View>
+      ))}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    position: "absolute",
-    bottom: 0,
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 10,
-    paddingVertical: 10,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
     width: "100%",
-    backgroundColor: "white",
-    elevation: 10, // Elevation for Android devices
-    shadowColor: "black", // Shadow color
-    shadowOffset: { width: 10, height: -20 }, // Offset to make shadow appear on top
-    shadowOpacity: 0.3, // Opacity of the shadow
-    shadowRadius: 4, // Radius of the shadow blur
-  },
-
-  buttonWrapper: {
-    flex: 1,
-    alignItems: "center",
-  },
-  button: {
-    // flexDirection: 'row',
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "white",
-    paddingVertical: 2,
-    paddingHorizontal: 20,
-    borderRadius: 30,
+    backgroundColor: COLORS.whiteTextColor,
     elevation: 10,
     shadowColor: "black",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 10, height: -20 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
   },
+  button: {
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  buttonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  gradient: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 30,
+  },
   buttonText: {
     marginLeft: 5,
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "bold",
+    color: COLORS.blackTextColor,
   },
 });
 

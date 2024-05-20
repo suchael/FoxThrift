@@ -3,55 +3,88 @@ import "react-native-gesture-handler";
 import React from "react";
 import {
   StyleSheet,
-  Text,
   SafeAreaView,
-  View,
-  TouchableOpacity,
-  ScrollView,
+  StatusBar,
+  ActivityIndicator,
 } from "react-native";
 
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 
-import BankCard from "./src/Home/BankCard";
-import BottomSheet from "./src/Home/BottomSheet";
-import BottomBtn from "./src/Home/BottomBtn";
+import SetTarget from "./src/SetTarget/SetTarget";
+import { COLORS } from "./src/Constant/Constant";
+import Home from "./src/Home/Home";
+import DepositScreen from "./src/SetTarget/DepositScreen";
+import Withdrawal from "./src/WithDrawAmount/Withdrawal";
+import Profile from "./src/Profile/Profile";
 
+const Stack = createStackNavigator();
 const App = () => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <View style={styles.container}>
-          <Text style={styles.headerText}>FoxThrift</Text>
-          <ScrollView contentContainerStyle={styles.scrollViewContent}>
-            <BankCard />
-            <WithdrawAndDeposit />
-            <BottomSheet />
-          </ScrollView>
-          <BottomBtn/>
-        </View>
+        <StatusBar
+          animated={true}
+          backgroundColor={COLORS.color_darkBlue}
+          barStyle="white-content"
+        />
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName="Home"
+            screenOptions={{
+              //animation:"slide",
+              headerShown: true,
+              headerStyle: {
+                backgroundColor: COLORS.color_darkBlue, // Set the background color to primary
+              },
+              headerTintColor: COLORS.whiteTextColor, // Set the text color to your desired color
+
+              lazy: true, // Enable lazy rendering
+              //lazyPreloadDistance: 1000, // Set the preload distance to 500 pixels
+              lazyPlaceholder: () => (
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <ActivityIndicator size="large" color={COLORS.primary} />
+                </View>
+              ),
+            }}
+          >
+            <Stack.Screen
+              name="Home"
+              component={Home}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="SetTarget"
+              component={SetTarget}
+              options={{ title: "Set Target" }}
+            />
+            <Stack.Screen
+              name="DepositScreen"
+              component={DepositScreen}
+              options={{ title: "Deposit section" }}
+            />
+            <Stack.Screen
+              name="Withdrawal"
+              component={Withdrawal}
+              options={{ title: "Withdrawal section" }}
+            />
+            <Stack.Screen
+              name="Profile"
+              component={Profile}
+              options={{ title: "Profile section" }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
       </SafeAreaView>
     </SafeAreaProvider>
-  );
-};
-
-const WithdrawAndDeposit = () => {
-  return (
-    <View style={styles.withdrawDepositWrapper}>
-      <TouchableOpacity style={styles.button}>
-        <MaterialCommunityIcons
-          name="credit-card-fast-outline"
-          size={24}
-          color="white"
-        />
-        <Text style={styles.buttonText}>Withdraw</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button}>
-        <MaterialIcons name="addchart" size={24} color="white" />
-        <Text style={styles.buttonText}>Deposit</Text>
-      </TouchableOpacity>
-    </View>
   );
 };
 
@@ -60,44 +93,7 @@ const styles = StyleSheet.create({
     flex: 1,
     // alignItems: "center",
     // justifyContent: 'center',
-    backgroundColor: "white",
-  },
-  headerText: {
-    fontSize: 25,
-    fontWeight: "500",
-    textAlign: "center",
-  },
-  scrollViewContent: {
-    paddingVertical: 20,
-    paddingBottom: 100,
-  },
-
-  withdrawDepositWrapper: {
-    flexDirection: "row",
-
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 10,
-    // backgroundColor: "red",
-  },
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "black",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    elevation: 24,
-    shadowColor: "black",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  },
-  buttonText: {
-    fontSize: 17,
-    fontWeight: "bold",
-    marginLeft: 10,
-    color: "white",
+    backgroundColor: COLORS.whiteTextColor,
   },
 });
 
