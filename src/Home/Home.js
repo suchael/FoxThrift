@@ -7,11 +7,10 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
- 
+  Image,
 } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
-
 
 import {
   MaterialCommunityIcons,
@@ -28,8 +27,25 @@ const Home = () => {
   return (
     <View style={styles.container}>
       <View style={styles.headerWrapper}>
-        <Entypo name="menu" size={30} color={COLORS.whiteTextColor} />
-        <Text style={styles.headerText}>FoxThrift</Text>
+        <View
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: "yellow",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Image
+            source={require("../../assets/Avatar.png")}
+            style={{ width: "100%", height: "100%", borderRadius: 20 }}
+          />
+        </View>
+        <View>
+          <Text style={styles.welcomeText}>Welcome back</Text>
+          <Text style={styles.headerText}>Sani_Abdusallam</Text>
+        </View>
       </View>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <BankCard />
@@ -46,16 +62,34 @@ const WithdrawAndDeposit = () => {
 
   return (
     <View style={styles.withdrawDepositWrapper}>
-      <TouchableOpacity style={styles.button} onPress={()=> navigation.navigate("Withdrawal")}>
+      <TouchableOpacity
+        style={[
+          styles.button,
+          {
+            borderBottomEndRadius: 25,
+            borderTopEndRadius: 25,
+          },
+        ]}
+        onPress={() => navigation.navigate("TargetDetails")}
+      >
         <MaterialCommunityIcons
           name="credit-card-fast-outline"
           size={24}
           color="white"
         />
-        <Text style={styles.buttonText}>Withdraw</Text>
+        <Text style={styles.buttonText}>My Target</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={()=> navigation.navigate("SetTarget")}>
+      <TouchableOpacity
+        style={[
+          styles.button,
+          {
+            borderTopStartRadius: 30,
+            borderBottomStartRadius: 30,
+          },
+        ]}
+        onPress={() => navigation.navigate("SetTarget")}
+      >
         <MaterialIcons name="addchart" size={24} color="white" />
         <Text style={styles.buttonText}>Set target</Text>
       </TouchableOpacity>
@@ -68,11 +102,15 @@ const styles = StyleSheet.create({
     flex: 1,
     // alignItems: "center",
     // justifyContent: 'center',
-    // backgroundColor: COLORS.whiteTextColor,
+    backgroundColor: COLORS.whiteTextColor,
   },
   headerText: {
-    fontSize: 25,
+    fontSize: 20,
     fontWeight: "bold",
+    color: COLORS.whiteTextColor,
+  },
+  welcomeText: {
+    fontSize: 17,
     color: COLORS.whiteTextColor,
   },
   headerWrapper: {

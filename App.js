@@ -2,10 +2,11 @@ import "react-native-gesture-handler";
 
 import React from "react";
 import {
-  StyleSheet,
+  StyleShenativeet,
   SafeAreaView,
   StatusBar,
   ActivityIndicator,
+  StyleSheet,
 } from "react-native";
 
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -17,11 +18,16 @@ import SetTarget from "./src/SetTarget/SetTarget";
 import { COLORS } from "./src/Constant/Constant";
 import Home from "./src/Home/Home";
 import DepositScreen from "./src/SetTarget/DepositScreen";
-import Withdrawal from "./src/WithDrawAmount/Withdrawal";
+import Cashout from "./src/MyTarget/Cashout";
 import Profile from "./src/Profile/Profile";
+import AccountDetails from "./src/MyTarget/AccountDetails";
+import TargetDetails from "./src/MyTarget/TargetDetails";
+import LoginScreen from "./src/LoginSignUp/Login";
+import SignupScreen from "./src/LoginSignUp/Signup";
 
 const Stack = createStackNavigator();
 const App = () => {
+  const userHasLoggedIn = false
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
@@ -32,7 +38,7 @@ const App = () => {
         />
         <NavigationContainer>
           <Stack.Navigator
-            initialRouteName="Home"
+            initialRouteName={userHasLoggedIn? "Home": "LoginScreen"}
             screenOptions={{
               //animation:"slide",
               headerShown: true,
@@ -72,14 +78,50 @@ const App = () => {
               options={{ title: "Deposit section" }}
             />
             <Stack.Screen
-              name="Withdrawal"
-              component={Withdrawal}
-              options={{ title: "Withdrawal section" }}
+              name="TargetDetails"
+              component={TargetDetails}
+              options={{ title: "My Target" }}
+            />
+            <Stack.Screen
+              name="Cashout"
+              component={Cashout}
+              options={{ title: "Cashout" }}
             />
             <Stack.Screen
               name="Profile"
               component={Profile}
               options={{ title: "Profile section" }}
+            />
+            <Stack.Screen
+              name="AccountDetails"
+              component={AccountDetails}
+              options={{ title: "Account Details" }}
+            />
+            <Stack.Screen
+              name="LoginScreen"
+              component={LoginScreen}
+              options={{
+                title: "FoxThrift  Login",
+                headerTitleAlign: "center",
+                headerTitleStyle: {
+                  fontSize: 24,
+                  fontWeight: "bold",
+                },
+                headerLeft: null,
+              }}
+            />
+            <Stack.Screen
+              name="SignupScreen"
+              component={SignupScreen}
+              options={{
+                title: "FoxThrift  Signup",
+                headerTitleAlign: "center",
+                headerTitleStyle: {
+                  fontSize: 24,
+                  fontWeight: "bold",
+                },
+                headerLeft: null,
+              }}
             />
           </Stack.Navigator>
         </NavigationContainer>

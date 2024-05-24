@@ -6,16 +6,20 @@ import {
   ScrollView,
   StyleSheet,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+
 import { FontAwesome5, MaterialIcons } from "@expo/vector-icons"; // Import FontAwesome5 for icons
 import { COLORS } from "../Constant/Constant";
 
 const Profile = () => {
+  const navigation = useNavigation();
+
   const handleWhatsAppContact = () => {
     // Logic for contacting via WhatsApp
   };
 
   const handleLogout = () => {
-    // Logic for logout
+    navigation.navigate("LoginScreen")
   };
 
   return (

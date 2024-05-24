@@ -1,122 +1,164 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Linking, Alert } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../Constant/Constant";
+import { useNavigation } from "@react-navigation/native";
 
 const BottomBtn = () => {
+  const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
-  const [textColor, setTextColor] = useState(false);
-  const [animatedValues, setAnimatedValues] = useState([
-    new Animated.Value(1),
-    new Animated.Value(1),
-    new Animated.Value(1),
-  ]);
 
-  const handlePress = (index) => {
-    const newAnimatedValues = animatedValues.map((value, i) =>
-      i === index ? new Animated.Value(1.2) : new Animated.Value(1)
-    );
-
-    setAnimatedValues(newAnimatedValues);
-
-    Animated.sequence([
-      Animated.timing(animatedValues[index], {
-        toValue: 1.2,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.spring(animatedValues[index], {
-        toValue: 1,
-        friction: 4,
-        useNativeDriver: true,
-      }),
-    ]).start(({ finished }) => {
-      if (finished) {
-        // Reset animation value after animation finishes
-        setAnimatedValues((prevValues) =>
-          prevValues.map((value, i) =>
-            i === index ? new Animated.Value(1) : value
-          )
-        );
-      }
-    });
-
-    // Navigate to the corresponding screen
-    const screenToNavigate = buttons[index].to;
-    navigation.navigate(screenToNavigate);
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
   };
 
-  const buttons = [
-    { icon: "home", text: "Home", to: "Home" },
-    { icon: "person", text: "Profile", to: "Profile" },
-  ];
+  const handleWhatsApp = () => {
+    const phoneNumber = "+2349015936616"; // WhatsApp phone number
+    const whatsappUrl = `whatsapp://send?phone=${phoneNumber}`;
+
+    Linking.canOpenURL(whatsappUrl).then((supported) => {
+      if (supported) {
+        setModalVisible(false); // Close modal
+        return Linking.openURL(whatsappUrl);
+      } else {
+        Alert.alert("WhatsApp is not installed on your device");
+      }
+    }).catch((err) => console.error("An error occurred", err));
+  };
+
+  const handleNavigate = (screen) => {
+    setModalVisible(false); // Close modal
+    navigation.navigate(screen);
+  };
 
   return (
-    <View style={styles.container}>
-      {buttons.map((button, index) => (
-        <TouchableOpacity
-          key={index}
-          style={styles.button}
-          onPress={() => handlePress(index)}
-        >
-          <Animated.View
-            style={[
-              styles.buttonContent,
-              { transform: [{ scale: animatedValues[index] }] },
-            ]}
-          >
-            <View style={styles.gradient}>
-              <MaterialIcons
-                name={button.icon}
-                size={24}
-                color={COLORS.blackTextColor}
-              />
-              <Text style={styles.buttonText}>{button.text}</Text>
-            </View>
-          </Animated.View>
+    <View style={styles.wrapper}>
+      <View style={styles.bottomBtnWrapper}>
+        <TouchableOpacity style={styles.circleButton} onPress={toggleModal}>
+          <MaterialIcons
+            name={modalVisible ? "close" : "arrow-upward"}
+            size={30}
+            color="white"
+          />
         </TouchableOpacity>
-      ))}
+      </View>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalContainer}
+          onPress={() => setModalVisible(false)}
+          activeOpacity={1}
+        >
+          <View style={styles.modalContent}>
+            <TouchableOpacity style={styles.optionButton} onPress={handleWhatsApp}>
+              <MaterialIcons
+                name="message"
+                size={30}
+                color={COLORS.color_darkBlue}
+              />
+              <Text style={styles.optionText}>Join Us on WhatsApp</Text>
+              <MaterialIcons
+                name="keyboard-arrow-right"
+                size={24}
+                color={COLORS.color_darkBlue}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.optionButton} onPress={() => handleNavigate('TargetHistory')}>
+              <MaterialIcons
+                name="history"
+                size={30}
+                color={COLORS.color_darkBlue}
+              />
+              <Text style={styles.optionText}>Target History</Text>
+              <MaterialIcons
+                name="keyboard-arrow-right"
+                size={24}
+                color={COLORS.color_darkBlue}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.optionButton} onPress={() => handleNavigate('LoginScreen')}>
+              <MaterialIcons
+                name="logout"
+                size={30}
+                color={COLORS.color_darkBlue}
+              />
+              <Text style={styles.optionText}>Logout</Text>
+              <MaterialIcons
+                name="keyboard-arrow-right"
+                size={24}
+                color={COLORS.color_darkBlue}
+              />
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 0,
-    paddingVertical: 0,
-    width: "100%",
-    backgroundColor: COLORS.whiteTextColor,
-    elevation: 10,
-    shadowColor: "black",
-    shadowOffset: { width: 10, height: -20 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  },
-  button: {
-    flex: 1,
-    marginHorizontal: 5,
-  },
-  buttonContent: {
-    flexDirection: "row",
-    alignItems: "center",
+  wrapper: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 70,
     justifyContent: "center",
-  },
-  gradient: {
-    flexDirection: "column",
     alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 8,
+    backgroundColor: "white",
     paddingHorizontal: 10,
-    borderRadius: 30,
+   
   },
-  buttonText: {
-    marginLeft: 5,
-    fontSize: 16,
-    fontWeight: "bold",
-    color: COLORS.blackTextColor,
+  bottomBtnWrapper: {
+    width: "100%",
+    height: 50,
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    bottom: 10,
+  },
+  circleButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: COLORS.color_darkBlue,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    top: -30,
+    elevation: 25,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.12)",
+    paddingHorizontal: 10,
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 30,
+    alignItems: "flex-start",
+    paddingBottom: 30,
+    marginBottom: 100,
+  },
+  optionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+    width: "100%",
+  },
+  optionText: {
+    marginLeft: 10,
+    fontSize: 18,
+    color: COLORS.color_darkBlue,
+    flex: 1,
   },
 });
 
