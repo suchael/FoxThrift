@@ -24,6 +24,11 @@ import AccountDetails from "./src/MyTarget/AccountDetails";
 import TargetDetails from "./src/MyTarget/TargetDetails";
 import LoginScreen from "./src/LoginSignUp/Login";
 import SignupScreen from "./src/LoginSignUp/Signup";
+import DataPlanCard from "./src/DataPlanCard/DataPlanCard";
+import All_Target_History from "./src/MyTarget/All_Target_History";
+import TargetHistory from "./src/MyTarget/TargetHistory";
+import DataHistory from "./src/Home/DataHistory";
+import ResetPassword from "./src/LoginSignUp/ResetPassword";
 
 const Stack = createStackNavigator();
 const App = () => {
@@ -83,6 +88,16 @@ const App = () => {
               options={{ title: "My Target" }}
             />
             <Stack.Screen
+              name="All_Target_History"
+              component={All_Target_History}
+              options={{ title: "All target history" }}
+            />
+            <Stack.Screen
+              name="TargetHistory"
+              component={TargetHistory}
+              options={{ title: "Target History" }}
+            />
+            <Stack.Screen
               name="Cashout"
               component={Cashout}
               options={{ title: "Cashout" }}
@@ -96,6 +111,16 @@ const App = () => {
               name="AccountDetails"
               component={AccountDetails}
               options={{ title: "Account Details" }}
+            />
+            <Stack.Screen
+              name="DataPlanCard"
+              component={DataPlanCard}
+              options={{ title: "Data Plan" }}
+            />
+            <Stack.Screen
+              name="DataHistory"
+              component={DataHistory}
+              options={{ title: "Data History" }}
             />
             <Stack.Screen
               name="LoginScreen"
@@ -115,6 +140,19 @@ const App = () => {
               component={SignupScreen}
               options={{
                 title: "FoxThrift  Signup",
+                headerTitleAlign: "center",
+                headerTitleStyle: {
+                  fontSize: 24,
+                  fontWeight: "bold",
+                },
+                headerLeft: null,
+              }}
+            />
+            <Stack.Screen
+              name="ResetPassword"
+              component={ResetPassword}
+              options={{
+                title: "FoxThrift  ResetPassword",
                 headerTitleAlign: "center",
                 headerTitleStyle: {
                   fontSize: 24,

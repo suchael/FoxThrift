@@ -107,6 +107,9 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 20,
     fontWeight: "bold",
+    textShadowColor: 'rgba(0, 0, 0, 0.9)',
+    textShadowOffset: { width: 3, height: 3 },
+    textShadowRadius: 5,
     color: COLORS.whiteTextColor,
   },
   welcomeText: {

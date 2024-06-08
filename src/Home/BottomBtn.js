@@ -1,6 +1,18 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Linking, Alert } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Modal,
+  Linking,
+  Alert,
+} from "react-native";
+import {
+  MaterialIcons,
+  AntDesign,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import { COLORS } from "../Constant/Constant";
 import { useNavigation } from "@react-navigation/native";
 
@@ -16,14 +28,16 @@ const BottomBtn = () => {
     const phoneNumber = "+2349015936616"; // WhatsApp phone number
     const whatsappUrl = `whatsapp://send?phone=${phoneNumber}`;
 
-    Linking.canOpenURL(whatsappUrl).then((supported) => {
-      if (supported) {
-        setModalVisible(false); // Close modal
-        return Linking.openURL(whatsappUrl);
-      } else {
-        Alert.alert("WhatsApp is not installed on your device");
-      }
-    }).catch((err) => console.error("An error occurred", err));
+    Linking.canOpenURL(whatsappUrl)
+      .then((supported) => {
+        if (supported) {
+          setModalVisible(false); // Close modal
+          return Linking.openURL(whatsappUrl);
+        } else {
+          Alert.alert("WhatsApp is not installed on your device");
+        }
+      })
+      .catch((err) => console.error("An error occurred", err));
   };
 
   const handleNavigate = (screen) => {
@@ -33,6 +47,17 @@ const BottomBtn = () => {
 
   return (
     <View style={styles.wrapper}>
+      <TouchableOpacity
+        style={styles.sideButton}
+        onPress={() => handleNavigate("DataPlanCard")}
+      >
+        <MaterialCommunityIcons
+          name="access-point-network"
+          size={28}
+          color="black"
+        />
+        <Text style={styles.sideButtonText}>Cheap Data</Text>
+      </TouchableOpacity>
       <View style={styles.bottomBtnWrapper}>
         <TouchableOpacity style={styles.circleButton} onPress={toggleModal}>
           <MaterialIcons
@@ -42,6 +67,13 @@ const BottomBtn = () => {
           />
         </TouchableOpacity>
       </View>
+      <TouchableOpacity
+        style={styles.sideButton}
+        onPress={() => handleNavigate("DataHistory")}
+      >
+        <MaterialCommunityIcons name="timer-sand" size={28} color="black" />
+        <Text style={styles.sideButtonText}>Data History</Text>
+      </TouchableOpacity>
 
       <Modal
         animationType="slide"
@@ -55,7 +87,10 @@ const BottomBtn = () => {
           activeOpacity={1}
         >
           <View style={styles.modalContent}>
-            <TouchableOpacity style={styles.optionButton} onPress={handleWhatsApp}>
+            <TouchableOpacity
+              style={styles.optionButton}
+              onPress={handleWhatsApp}
+            >
               <MaterialIcons
                 name="message"
                 size={30}
@@ -68,26 +103,32 @@ const BottomBtn = () => {
                 color={COLORS.color_darkBlue}
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.optionButton} onPress={() => handleNavigate('TargetHistory')}>
+            <TouchableOpacity
+              style={styles.optionButton}
+              onPress={() => handleNavigate("All_Target_History")}
+            >
               <MaterialIcons
                 name="history"
                 size={30}
                 color={COLORS.color_darkBlue}
               />
-              <Text style={styles.optionText}>Target History</Text>
+              <Text style={styles.optionText}>All target History</Text>
               <MaterialIcons
                 name="keyboard-arrow-right"
                 size={24}
                 color={COLORS.color_darkBlue}
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.optionButton} onPress={() => handleNavigate('LoginScreen')}>
+            <TouchableOpacity
+              style={styles.optionButton}
+              onPress={() => handleNavigate("LoginScreen")}
+            >
               <MaterialIcons
                 name="logout"
                 size={30}
-                color={COLORS.color_darkBlue}
+                color="red"
               />
-              <Text style={styles.optionText}>Logout</Text>
+              <Text style={[styles.optionText, {color: "red"}]}>Logout</Text>
               <MaterialIcons
                 name="keyboard-arrow-right"
                 size={24}
@@ -107,21 +148,25 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    height: 70,
-    justifyContent: "center",
+    height: 80,
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: "white",
     paddingHorizontal: 10,
-   
+    elevation: 24,
+    borderTopWidth: 0.5,
+    borderColor: "lightgray",
   },
   bottomBtnWrapper: {
-    width: "100%",
-    height: 50,
-    borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
-    position: "absolute",
-    bottom: 10,
+    backgroundColor: "white",
+    padding: 3,
+    borderRadius: 32,
+    elevation: 24,
+
+    marginBottom: 0,
   },
   circleButton: {
     width: 60,
@@ -130,14 +175,28 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.color_darkBlue,
     justifyContent: "center",
     alignItems: "center",
-    position: "absolute",
-    top: -30,
-    elevation: 25,
+    // elevation: 10,
+  },
+  sideButton: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    // backgroundColor: COLORS.color_darkBlue,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 25,
+    marginHorizontal: 5,
+  },
+  sideButtonText: {
+    color: "black",
+    marginLeft: 5,
+    fontSize: 16,
+    fontWeight: "bold",
   },
   modalContainer: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(0, 0, 0, 0.12)",
+    backgroundColor: "rgba(0, 0, 0, 0.05)",
     paddingHorizontal: 10,
   },
   modalContent: {
@@ -147,6 +206,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     paddingBottom: 30,
     marginBottom: 100,
+    elevation: 24,
   },
   optionButton: {
     flexDirection: "row",

@@ -21,6 +21,7 @@ export default function LoginScreen({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [authenticating, setAuthenticating] = useState(false);
   const [authError, setAuthError] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   useEffect(() => {
     const checkBiometrics = async () => {
@@ -36,24 +37,26 @@ export default function LoginScreen({ navigation }) {
   const handleBiometricLogin = async () => {
     if (biometricAvailable) {
       setModalVisible(true);
-      setAuthenticating(true);
       setAuthError("");
       const auth = await LocalAuthentication.authenticateAsync({
         promptMessage: "Authenticate to log in",
-        fallbackLabel: "Enter your password",
+        fallbackLabel: "Enter your phone password",
       });
 
-      setAuthenticating(false);
-
       if (auth.success) {
+        setAuthenticating(true);
+        console.log("biometric login successful");
+
         setModalVisible(false);
         navigation.replace("Home");
       } else {
         setAuthError("Authentication failed");
+        setAuthenticating(false);
+        console.log("biometric login FAILED");
       }
     } else {
       setAuthError(
-        "Biometric authentication is not available. Please log in with email and password."
+        "Biometric authentication is not available for your device. Please log in with email and password."
       );
     }
   };
@@ -87,13 +90,30 @@ export default function LoginScreen({ navigation }) {
             style={styles.input}
             value={password}
             onChangeText={setPassword}
-            secureTextEntry
+            secureTextEntry={!passwordVisible}
           />
+          <TouchableOpacity
+            onPress={() => setPasswordVisible(!passwordVisible)}
+          >
+            <Icon
+              name={passwordVisible ? "visibility" : "visibility-off"}
+              size={20}
+              color="#666"
+            />
+          </TouchableOpacity>
         </View>
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
 
+        <View style={styles.row}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("ResetPassword")}
+            style={[styles.btn, { marginVertical: 15 }]}
+          >
+            <Text style={styles.link}>Reset Password</Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.row}>
           <TouchableOpacity
             onPress={() => navigation.navigate("SignupScreen")}
@@ -125,7 +145,7 @@ export default function LoginScreen({ navigation }) {
       <Modal
         animationType="fade"
         transparent={true}
-        visible={modalVisible}
+        visible={authenticating}
         onRequestClose={() => {
           setModalVisible(false);
         }}
@@ -135,25 +155,14 @@ export default function LoginScreen({ navigation }) {
           activeOpacity={1}
           onPressOut={() => setModalVisible(false)}
         >
-          <View style={styles.modalContent}>
-            {authenticating ? (
-              <ActivityIndicator size="large" color={COLORS.color_darkBlue} />
-            ) : (
-              <>
-                <Text style={styles.modalText}>
-                  {authError || "Authentication successful"}
-                </Text>
-                {authError && (
-                  <TouchableOpacity
-                    onPress={() => setModalVisible(false)}
-                    style={styles.closeButton}
-                  >
-                    <Text style={styles.closeButtonText}>Close</Text>
-                  </TouchableOpacity>
-                )}
-              </>
-            )}
-          </View>
+          {authenticating && (
+            <View style={styles.modalBackground}>
+              <View style={styles.modalContent}>
+                <ActivityIndicator size="large" color={COLORS.color_darkBlue} />
+                <Text style={styles.modalText}>Authenticating...</Text>
+              </View>
+            </View>
+          )}
         </TouchableOpacity>
       </Modal>
     </ScrollView>
@@ -162,15 +171,17 @@ export default function LoginScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   contWrapper: {
-    flex: 1,
     justifyContent: "center",
+    backgroundColor: "white",
+    flexGrow: 1,
   },
   container: {
     backgroundColor: "rgba(255, 255, 255, 0.9)",
     margin: 20,
+    marginTop: 50,
     padding: 20,
     borderRadius: 10,
-    elevation: 10,
+    elevation: 15,
   },
   title: {
     fontSize: 24,
@@ -213,11 +224,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginVertical: 20,
+    backgroundColor: "white",
   },
   biometricText: {
     marginLeft: 10,
     color: COLORS.color_darkBlue,
     fontSize: 18,
+    fontWeight: "bold",
   },
   row: {
     flexDirection: "row",
@@ -240,25 +253,29 @@ const styles = StyleSheet.create({
   biometricsWrapper: {},
   fingerPrintWrapper: {
     padding: 5,
-    elevation: 24,
+    elevation: 15,
     backgroundColor: COLORS.whiteTextColor,
+    borderWidth: 1,
+    borderColor: COLORS.color_darkBlue,
     borderRadius: 5,
     marginBottom: 10,
   },
   modalBackground: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalContent: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 20,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   modalText: {
     fontSize: 18,
+    fontWeight: "bold",
     marginBottom: 20,
     color: COLORS.color_darkBlue,
   },
@@ -268,7 +285,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   closeButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
   },
 });

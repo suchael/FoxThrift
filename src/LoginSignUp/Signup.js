@@ -11,7 +11,10 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import * as Animatable from "react-native-animatable";
 import * as LocalAuthentication from "expo-local-authentication";
+import axios from 'axios';
+
 import { COLORS } from "../Constant/Constant";
+import { LOCAL_IP_ADDRESS } from "../Constant/URL";
 
 export default function SignupScreen({ navigation }) {
   const [fullName, setFullName] = useState("");
@@ -19,6 +22,8 @@ export default function SignupScreen({ navigation }) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
 
   const handleBiometricRegister = async () => {
     // Check if biometric authentication is available and enroll
@@ -47,11 +52,31 @@ export default function SignupScreen({ navigation }) {
     }
   };
 
-  const handleSignup = () => {
-    // Handle the rest of the signup process here
-    Alert.alert("Signup successful. Please log in.");
-    navigation.navigate("LoginScreen");
+  // Function to handle signup
+  
+  const handleSignup = async () => {
+    try {
+      const response = await axios.post('http://${LOCAL_IP_ADDRESS}:3099/api/auth/signup', {
+        fullName,
+        username,
+        email,
+        phoneNumber,
+        password,
+      });
+  
+      if (response.status === 201) {
+        Alert.alert('Signup successful', 'Please check your email for confirmation.');
+        navigation.navigate('LoginScreen');
+      } else {
+        console.log('Signup failed:', response.data.error || 'Something went wrong. Please try again.');
+        Alert.alert('Signup failed', response.data.error || 'Something went wrong. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      Alert.alert('Signup failed', 'Something went wrong. Please try again.');
+    }
   };
+  
 
   return (
     <ScrollView contentContainerStyle={styles.contWrapper}>
@@ -68,21 +93,20 @@ export default function SignupScreen({ navigation }) {
             autoCapitalize="none"
           />
         </View>
-        {
-          fullName.length > 3 && (<Text
+        {fullName.length > 2 && (
+          <Text
             style={{
               fontSize: 16,
               fontWeight: "500",
               marginTop: -16,
               marginBottom: 20,
-              color: COLORS.color_darkBlue
+              color: COLORS.color_darkBlue,
             }}
           >
             Please ensure that your full name matches the one on your bank
             details.
-          </Text>)
-        }
-        
+          </Text>
+        )}
 
         <View style={styles.inputContainer}>
           <Icon name="person" size={20} color="#666" style={styles.inputIcon} />
@@ -127,12 +151,12 @@ export default function SignupScreen({ navigation }) {
             style={styles.input}
             value={password}
             onChangeText={setPassword}
-            secureTextEntry
+            secureTextEntry={!passwordVisible}
           />
+          <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
+            <Icon name={passwordVisible ? "visibility" : "visibility-off"} size={20} color="#666" />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.button} onPress={handleSignup}>
-          <Text style={styles.buttonText}>Sign Up</Text>
-        </TouchableOpacity>
         <TouchableOpacity
           style={styles.biometricButton}
           onPress={handleBiometricRegister}
@@ -140,6 +164,10 @@ export default function SignupScreen({ navigation }) {
           <Icon name="fingerprint" size={30} color={COLORS.color_darkBlue} />
           <Text style={styles.biometricText}>Register Biometrics</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handleSignup}>
+          <Text style={styles.buttonText}>Sign Up</Text>
+        </TouchableOpacity>
+       
         <View style={styles.row}>
           <TouchableOpacity
             onPress={() => navigation.navigate("LoginScreen")}
@@ -213,6 +241,7 @@ const styles = StyleSheet.create({
   biometricText: {
     marginLeft: 10,
     color: COLORS.color_darkBlue,
+    fontWeight: "bold",
     fontSize: 18,
   },
   row: {

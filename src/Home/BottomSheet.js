@@ -125,9 +125,10 @@ const BottomSheet = () => {
     setModalVisible(true);
   };
 
+  const percentageProgress = "80"; // 50%
   return (
     <View style={styles.container}>
-      <BottomSheetTop />
+      <BottomSheetTop progress={percentageProgress}/>
       <View style={styles.bottomSheetWrapper}>
         <View style={styles.historyWrapper}>
           <View>
@@ -214,6 +215,9 @@ const styles = StyleSheet.create({
   history: {
     fontSize: 18,
     fontWeight: "bold",
+    textShadowColor: 'rgba(0, 0, 0, 0.4)',
+    textShadowOffset: { width: 3, height: 3 },
+    textShadowRadius: 5,
   },
   date: {
     fontWeight: "bold",
