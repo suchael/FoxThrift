@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -8,11 +8,15 @@ import {
   ScrollView,
   Modal,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import * as Animatable from "react-native-animatable";
 import * as LocalAuthentication from "expo-local-authentication";
+import * as SecureStore from "expo-secure-store";
+import axios from "axios";
 import { COLORS } from "../Constant/Constant";
+import { AppContext } from "../../AppContextProvider";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -23,6 +27,8 @@ export default function LoginScreen({ navigation }) {
   const [authError, setAuthError] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
 
+  const { setUserData } = useContext(AppContext);
+
   useEffect(() => {
     const checkBiometrics = async () => {
       const hasHardware = await LocalAuthentication.hasHardwareAsync();
@@ -31,7 +37,16 @@ export default function LoginScreen({ navigation }) {
         setBiometricAvailable(true);
       }
     };
+
+    const getEmailFromSecureStore = async () => {
+      const storedEmail = await SecureStore.getItemAsync("email");
+      if (storedEmail) {
+        setEmail(storedEmail);
+      }
+    };
+
     checkBiometrics();
+    getEmailFromSecureStore();
   }, []);
 
   const handleBiometricLogin = async () => {
@@ -42,17 +57,54 @@ export default function LoginScreen({ navigation }) {
         promptMessage: "Authenticate to log in",
         fallbackLabel: "Enter your phone password",
       });
-
+  
       if (auth.success) {
         setAuthenticating(true);
-        console.log("biometric login successful");
-
-        setModalVisible(false);
-        navigation.replace("Home");
+        try {
+          const storedEmail = await SecureStore.getItemAsync("email");
+          const token = await SecureStore.getItemAsync("token");
+  
+          if (storedEmail && token) {
+            const response = await axios.post(
+              "http://192.168.43.244:3099/api/auth/biometric-login",
+              { email: storedEmail, token }
+            );
+  
+            if (response.status === 200) {
+              const data = response.data;
+              setAuthenticating(false);
+              setModalVisible(false);
+              console.log("Biometric login successful");
+  
+              navigation.replace("Home");
+              setUserData({ userData: data.user });
+            } else {
+              setAuthError("Authentication failed");
+              setAuthenticating(false);
+              console.log("Biometric login FAILED");
+            }
+          } else {
+            setAuthError("No stored email or token found");
+            setAuthenticating(false);
+          }
+        } catch (error) {
+          if (error.response) {
+            if (error.response.status === 401) {
+              console.error("error: Invalid token. Please log in with email and password.")
+              setAuthError("Invalid token. Please log in with email and password.");
+            } else {
+              setAuthError("Authentication failed. Please try again.");
+            }
+          } else {
+            setAuthError("Something went wrong. Please try again.");
+          }
+          console.error("Error:", error);
+          setAuthenticating(false);
+        }
       } else {
         setAuthError("Authentication failed");
         setAuthenticating(false);
-        console.log("biometric login FAILED");
+        console.log("Biometric login FAILED");
       }
     } else {
       setAuthError(
@@ -60,11 +112,73 @@ export default function LoginScreen({ navigation }) {
       );
     }
   };
+  
+  
+  
 
-  const handleLogin = () => {
-    // Handle traditional login here
-    navigation.replace("Home");
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert("Validation Error", "Email and Password are required.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://192.168.43.244:3099/api/auth/login",
+        { email, password }
+      );
+
+      if (response.status === 401) {
+        alert("Invalid email or token");
+        console.log("invalid email or token")
+        return;
+      }
+      if (response.status === 200) {
+        const data = response.data;
+        console.log("Login successful:", data);
+        console.log("Token: ", data.token);
+
+        await SecureStore.setItemAsync("email", email);
+        await SecureStore.setItemAsync("token", data.token); // Store the token as a string
+        await SecureStore.setItemAsync("user", JSON.stringify(data.user)); // Store the user data as a string
+
+        navigation.replace("Home");
+        setUserData({ userData: data.user });
+      } else {
+        console.log(
+          "Login failed:",
+          response.data.error || "Something went wrong. Please try again."
+        );
+        Alert.alert(
+          "Login failed",
+          response.data.error || "Something went wrong. Please try again."
+        );
+      }
+    } catch (error) {
+      if (error.response) {
+        // Handle 401 status code
+        if (error.response.status === 401) {
+          Alert.alert("Login failed", "Invalid email or password.");
+          console.log("Invalid email or password");
+        } else {
+          // Handle other status codes
+          console.log(
+            "Login failed:",
+            error.response.data.error || "Something went wrong. Please try again."
+          );
+          Alert.alert(
+            "Login failed",
+            error.response.data.error || "Something went wrong. Please try again."
+          );
+        }
+      } else {
+        // Handle other errors (e.g., network errors)
+        console.error("Error:", error);
+        Alert.alert("Login failed", "Something went wrong. Please try again.");
+      }
+    }
   };
+  
 
   return (
     <ScrollView contentContainerStyle={styles.contWrapper}>
@@ -146,9 +260,7 @@ export default function LoginScreen({ navigation }) {
         animationType="fade"
         transparent={true}
         visible={authenticating}
-        onRequestClose={() => {
-          setModalVisible(false);
-        }}
+        onRequestClose={() => setModalVisible(false)}
       >
         <TouchableOpacity
           style={styles.modalBackground}

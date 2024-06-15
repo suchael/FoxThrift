@@ -1,6 +1,6 @@
 import "react-native-gesture-handler";
 
-import React from "react";
+import React, { useContext } from "react";
 import {
   StyleSheet,
   Text,
@@ -22,8 +22,15 @@ import { COLORS } from "../Constant/Constant";
 import BottomBtn from "./BottomBtn";
 import BottomSheet from "./BottomSheet";
 import BankCard from "./BankCard";
+import { AppContext } from "../../AppContextProvider";
 
 const Home = () => {
+  const { userData } = useContext(AppContext);
+  console.log("userData: ",userData);
+
+  const USER_DATA = userData? userData: "null"
+  
+
   return (
     <View style={styles.container}>
       <View style={styles.headerWrapper}>
@@ -44,7 +51,7 @@ const Home = () => {
         </View>
         <View>
           <Text style={styles.welcomeText}>Welcome back</Text>
-          <Text style={styles.headerText}>Sani_Abdusallam</Text>
+          <Text style={styles.headerText}>{userData? userData.userData?.username: USER_DATA}</Text>
         </View>
       </View>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>

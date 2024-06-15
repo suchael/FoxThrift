@@ -10,8 +10,10 @@ import {
 } from "react-native";
 import {
   MaterialIcons,
-  AntDesign,
+  FontAwesome,
   MaterialCommunityIcons,
+  Ionicons,
+  FontAwesome5,
 } from "@expo/vector-icons";
 import { COLORS } from "../Constant/Constant";
 import { useNavigation } from "@react-navigation/native";
@@ -89,10 +91,23 @@ const BottomBtn = () => {
           <View style={styles.modalContent}>
             <TouchableOpacity
               style={styles.optionButton}
+              onPress={() => handleNavigate("Profile")}
+            >
+              <Ionicons name="person" size={30} color={COLORS.color_darkBlue} />
+
+              <Text style={styles.optionText}>Profile</Text>
+              <MaterialIcons
+                name="keyboard-arrow-right"
+                size={24}
+                color={COLORS.color_darkBlue}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.optionButton}
               onPress={handleWhatsApp}
             >
-              <MaterialIcons
-                name="message"
+              <FontAwesome
+                name="whatsapp"
                 size={30}
                 color={COLORS.color_darkBlue}
               />
@@ -107,28 +122,12 @@ const BottomBtn = () => {
               style={styles.optionButton}
               onPress={() => handleNavigate("All_Target_History")}
             >
-              <MaterialIcons
-                name="history"
-                size={30}
+              <FontAwesome5
+                name="hourglass-start"
+                size={28}
                 color={COLORS.color_darkBlue}
               />
-              <Text style={styles.optionText}>All target History</Text>
-              <MaterialIcons
-                name="keyboard-arrow-right"
-                size={24}
-                color={COLORS.color_darkBlue}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.optionButton}
-              onPress={() => handleNavigate("LoginScreen")}
-            >
-              <MaterialIcons
-                name="logout"
-                size={30}
-                color="red"
-              />
-              <Text style={[styles.optionText, {color: "red"}]}>Logout</Text>
+              <Text style={styles.optionText}>{" "}All target History</Text>
               <MaterialIcons
                 name="keyboard-arrow-right"
                 size={24}

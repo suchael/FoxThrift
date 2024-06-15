@@ -12,6 +12,7 @@ import { COLORS } from "../Constant/Constant";
 
 const BankCard = () => {
   const [isBalanceVisible, setIsBalanceVisible] = useState(false);
+  const [userBalance, setUserBalance] = useState(0);
   const [animatedValue] = useState(new Animated.Value(0));
 
   const toggleBalanceVisibility = () => {
@@ -42,7 +43,7 @@ const BankCard = () => {
             </Animated.View>
           </View>
           <Text style={styles.balance}>
-            {isBalanceVisible ? "₦ 50,000" : "₦ ****"}
+            {isBalanceVisible ? `₦ ${userBalance}` : "₦ ****"}
           </Text>
           <View style={styles.details}>
             <Text style={styles.text}>Full name: Sani Abdusallam</Text>

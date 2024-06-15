@@ -24,9 +24,7 @@ export default function SignupScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
 
-
   const handleBiometricRegister = async () => {
-    // Check if biometric authentication is available and enroll
     const hasHardware = await LocalAuthentication.hasHardwareAsync();
     const isEnrolled = await LocalAuthentication.isEnrolledAsync();
 
@@ -52,18 +50,16 @@ export default function SignupScreen({ navigation }) {
     }
   };
 
-  // Function to handle signup
-  
   const handleSignup = async () => {
     try {
-      const response = await axios.post('http://${LOCAL_IP_ADDRESS}:3099/api/auth/signup', {
+      const response = await axios.post('http://192.168.43.244:3099/api/auth/signup', {
         fullName,
         username,
         email,
         phoneNumber,
         password,
       });
-  
+
       if (response.status === 201) {
         Alert.alert('Signup successful', 'Please check your email for confirmation.');
         navigation.navigate('LoginScreen');
@@ -72,11 +68,14 @@ export default function SignupScreen({ navigation }) {
         Alert.alert('Signup failed', response.data.error || 'Something went wrong. Please try again.');
       }
     } catch (error) {
-      console.error('Error:', error);
-      Alert.alert('Signup failed', 'Something went wrong. Please try again.');
+      if (error.response && error.response.status === 409) {
+        Alert.alert('Signup failed', 'Email already exists. Please use a different email.');
+      } else {
+        console.error('Error:', error);
+        Alert.alert('Signup failed', 'Something went wrong. Please try again.');
+      }
     }
   };
-  
 
   return (
     <ScrollView contentContainerStyle={styles.contWrapper}>
@@ -167,7 +166,7 @@ export default function SignupScreen({ navigation }) {
         <TouchableOpacity style={styles.button} onPress={handleSignup}>
           <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
-       
+
         <View style={styles.row}>
           <TouchableOpacity
             onPress={() => navigation.navigate("LoginScreen")}

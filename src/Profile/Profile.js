@@ -1,120 +1,167 @@
-import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import React, { useContext, useEffect, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import * as SecureStore from "expo-secure-store";
+import * as LocalAuthentication from "expo-local-authentication";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
-import { FontAwesome5, MaterialIcons } from "@expo/vector-icons"; // Import FontAwesome5 for icons
+import { AppContext } from "../../AppContextProvider";
 import { COLORS } from "../Constant/Constant";
 
-const Profile = () => {
-  const navigation = useNavigation();
+const Profile = ({ route, navigation }) => {
+  const { userData } = useContext(AppContext);
+  const [biometricEnrolled, setBiometricEnrolled] = useState(false);
 
-  const handleWhatsAppContact = () => {
-    // Logic for contacting via WhatsApp
+  useEffect(() => {
+    const checkBiometrics = async () => {
+      const has_Fingerprint_Hardware = await LocalAuthentication.hasHardwareAsync();
+      const user_has_enroll_biometric = await LocalAuthentication.isEnrolledAsync();
+      console.log("user_has_enroll_biometric: ", user_has_enroll_biometric);
+      setBiometricEnrolled(has_Fingerprint_Hardware && user_has_enroll_biometric);
+    };
+    checkBiometrics();
+  }, []);
+
+  const handleBiometricRegister = async () => {
+    const hasHardware = await LocalAuthentication.hasHardwareAsync();
+    const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+
+    if (!hasHardware) {
+      Alert.alert("Biometric hardware not available");
+      return;
+    }
+
+    if (!isEnrolled) {
+      Alert.alert("Please enroll your biometrics in the device settings first");
+      return;
+    }
+
+    const biometricAuth = await LocalAuthentication.authenticateAsync({
+      promptMessage: "Register Biometrics",
+    });
+
+    if (biometricAuth.success) {
+      await SecureStore.setItemAsync("biometricEnrolled", "true");
+      Alert.alert("Biometric registration successful");
+      setBiometricEnrolled(true);
+    } else {
+      Alert.alert("Biometric registration failed");
+    }
   };
 
   const handleLogout = () => {
-    navigation.navigate("LoginScreen")
+    Alert.alert(
+      "Logout Confirmation",
+      "Are you sure you want to logout?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Logout cancelled"),
+          style: "cancel",
+        },
+        {
+          text: "Logout",
+          onPress: async () => {
+            await SecureStore.deleteItemAsync("email");
+            await SecureStore.deleteItemAsync("token");
+            await SecureStore.deleteItemAsync("user");
+            await SecureStore.deleteItemAsync("biometricEnrolled");
+            navigation.replace("LoginScreen");
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
+      <Text style={styles.title}>Your Profile</Text>
       <View style={styles.profileInfo}>
-        <FontAwesome5
-          name="user-circle"
-          size={100}
-          color="#333"
-          style={styles.icon}
-        />
-        <Text style={styles.name}>Sanni Abdulsalam</Text>
-        <Text style={styles.email}>sanni.abdulsalam@example.com</Text>
+        <Text style={styles.label}>Full Name:</Text>
+        <Text style={styles.value}>{userData.userData.fullName}</Text>
       </View>
-      <TouchableOpacity
-        style={styles.whatsappButton}
-        onPress={handleWhatsAppContact}
-      >
-        <FontAwesome5
-          name="whatsapp"
-          size={24}
-          color="#fff"
-          style={styles.whatsappIcon}
-        />
-        <Text style={styles.whatsappText}>Contact Us via WhatsApp</Text>
+      <View style={styles.profileInfo}>
+        <Text style={styles.label}>Username:</Text>
+        <Text style={styles.value}>{userData.userData.username}</Text>
+      </View>
+      <View style={styles.profileInfo}>
+        <Text style={styles.label}>Email:</Text>
+        <Text style={styles.value}>{userData.userData.email}</Text>
+      </View>
+      <View style={styles.profileInfo}>
+        <Text style={styles.label}>Phone Number:</Text>
+        <Text style={styles.value}>{userData.userData.phoneNumber}</Text>
+      </View>
+
+      {!biometricEnrolled && (
+        <TouchableOpacity
+          style={styles.biometricButton}
+          onPress={handleBiometricRegister}
+        >
+          <Icon name="fingerprint" size={35} />
+
+          <Text style={styles.biometricText}>Set Up Biometrics</Text>
+        </TouchableOpacity>
+      )}
+
+      <TouchableOpacity style={styles.button} onPress={handleLogout}>
+        <Text style={styles.buttonText}>Logout</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={[styles.whatsappButton, {backgroundColor: COLORS.color_darkBlue}]}
-        onPress={handleWhatsAppContact}
-      >
-        <FontAwesome5
-          name="history"
-          size={24}
-          color="#fff"
-          style={styles.whatsappIcon}
-        />
-        <Text style={styles.whatsappText}>Target History</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Logout</Text>
-      </TouchableOpacity>
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#ffffff",
+    flex: 1,
     padding: 20,
+    justifyContent: "center",
+    backgroundColor: COLORS.whiteTextColor,
   },
-  profileInfo: {
-    alignItems: "center",
-    marginBottom: 30,
-  },
-  icon: {
-    marginBottom: 10,
-  },
-  name: {
+  title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 5,
+    marginBottom: 20,
+    textAlign: "center",
   },
-  email: {
-    fontSize: 16,
-    color: "#666",
-  },
-  whatsappButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#25D366",
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 5,
+  profileInfo: {
     marginBottom: 20,
   },
-  whatsappIcon: {
-    marginRight: 10,
+  label: {
+    fontSize: 18,
+    fontWeight: "bold",
   },
-  whatsappText: {
-    color: "#fff",
+  value: {
+    fontSize: 18,
+    color: "#555",
+  },
+  biometricButton: {
+    backgroundColor: COLORS.whiteTextColor,
+    borderWidth: 3,
+    borderColor: COLORS.color_darkBlue,
+    padding: 12,
+    borderRadius: 5,
+    alignItems: "center",
+    marginBottom: 20,
+    elevation: 10,
+  },
+  biometricText: {
+    // color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
   },
-  logoutButton: {
+  button: {
     position: "absolute",
-    bottom: 20,
-    backgroundColor: "#FF4500",
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 5,
+    left: 10,
+    right: 10,
+    bottom: 10,
+    backgroundColor: COLORS.color_darkBlue,
+    padding: 12,
+    borderRadius: 40,
+    alignItems: "center",
+    marginTop: 20,
   },
-  logoutText: {
+  buttonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
