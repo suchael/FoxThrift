@@ -11,7 +11,6 @@ import {
 import {
   MaterialIcons,
   FontAwesome,
-  MaterialCommunityIcons,
   Ionicons,
   FontAwesome5,
 } from "@expo/vector-icons";
@@ -49,7 +48,7 @@ const BottomBtn = () => {
 
   return (
     <View style={styles.wrapper}>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.sideButton}
         onPress={() => handleNavigate("DataPlanCard")}
       >
@@ -59,7 +58,7 @@ const BottomBtn = () => {
           color="black"
         />
         <Text style={styles.sideButtonText}>Cheap Data</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <View style={styles.bottomBtnWrapper}>
         <TouchableOpacity style={styles.circleButton} onPress={toggleModal}>
           <MaterialIcons
@@ -69,13 +68,13 @@ const BottomBtn = () => {
           />
         </TouchableOpacity>
       </View>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.sideButton}
         onPress={() => handleNavigate("DataHistory")}
       >
         <MaterialCommunityIcons name="timer-sand" size={28} color="black" />
         <Text style={styles.sideButtonText}>Data History</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <Modal
         animationType="slide"
@@ -149,13 +148,14 @@ const styles = StyleSheet.create({
     bottom: 0,
     height: 80,
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
+    // justifyContent: "space-between",
+    // elevation: 24,
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: "transparent",
     paddingHorizontal: 10,
-    elevation: 24,
-    borderTopWidth: 0.5,
-    borderColor: "lightgray",
+    // borderTopWidth: 0.5,
+    // borderColor: "lightgray",
   },
   bottomBtnWrapper: {
     justifyContent: "center",

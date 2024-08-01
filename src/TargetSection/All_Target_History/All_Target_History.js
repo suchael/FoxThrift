@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons"; // Assuming you're using Expo
-import { COLORS } from "../Constant/Constant";
+import { COLORS } from "../../Constant/Constant";
 
 const All_Target_History = () => {
   const navigation = useNavigation();

@@ -14,22 +14,22 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
-import SetTarget from "./src/SetTarget/SetTarget";
+import SetTarget from "./src/TargetSection/SetTarget/SetTarget";
 import { COLORS } from "./src/Constant/Constant";
 import Home from "./src/Home/Home";
-import DepositScreen from "./src/SetTarget/DepositScreen";
-import Cashout from "./src/MyTarget/Cashout";
+import DepositScreen from "./src/TargetSection/SetTarget/DepositScreen";
+import CurrentTarget from "./src/CurrentTarget/CurrentTarget";
 import Profile from "./src/Profile/Profile";
-import AccountDetails from "./src/MyTarget/AccountDetails";
-import TargetDetails from "./src/MyTarget/TargetDetails";
+import AccountDetails from "./src/CurrentTarget/AccountDetails";
+import TargetDetails from "./src/CurrentTarget/TargetDetails";
 import LoginScreen from "./src/LoginSignUp/Login";
 import SignupScreen from "./src/LoginSignUp/Signup";
 import DataPlanCard from "./src/DataPlanCard/DataPlanCard";
-import All_Target_History from "./src/MyTarget/All_Target_History";
-import TargetHistory from "./src/MyTarget/TargetHistory";
 import DataHistory from "./src/Home/DataHistory";
 import ResetPassword from "./src/LoginSignUp/ResetPassword";
 import { AppContextProvider } from "./AppContextProvider";
+import All_Target_History from "./src/TargetSection/All_Target_History/All_Target_History";
+import TargetHistory from "./src/TargetSection/CurrentTarget/TargetHistory";
 
 const Stack = createStackNavigator();
 const App = () => {
@@ -101,7 +101,7 @@ const App = () => {
               />
               <Stack.Screen
                 name="Cashout"
-                component={Cashout}
+                component={CurrentTarget}
                 options={{ title: "Cashout" }}
               />
               <Stack.Screen

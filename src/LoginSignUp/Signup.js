@@ -11,10 +11,10 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import * as Animatable from "react-native-animatable";
 import * as LocalAuthentication from "expo-local-authentication";
-import axios from 'axios';
+import axios from "axios";
 
 import { COLORS } from "../Constant/Constant";
-import { LOCAL_IP_ADDRESS } from "../Constant/URL";
+import { LOCAL_IP_ADDRESS, SIGNUP_URL } from "../Constant/URL";
 
 export default function SignupScreen({ navigation }) {
   const [fullName, setFullName] = useState("");
@@ -52,7 +52,7 @@ export default function SignupScreen({ navigation }) {
 
   const handleSignup = async () => {
     try {
-      const response = await axios.post('http://192.168.43.244:3099/api/auth/signup', {
+      const response = await axios.post(SIGNUP_URL, {
         fullName,
         username,
         email,
@@ -61,18 +61,30 @@ export default function SignupScreen({ navigation }) {
       });
 
       if (response.status === 201) {
-        Alert.alert('Signup successful', 'Please check your email for confirmation.');
-        navigation.navigate('LoginScreen');
+        Alert.alert(
+          "Signup successful",
+          "Please check your email for confirmation."
+        );
+        navigation.navigate("LoginScreen");
       } else {
-        console.log('Signup failed:', response.data.error || 'Something went wrong. Please try again.');
-        Alert.alert('Signup failed', response.data.error || 'Something went wrong. Please try again.');
+        console.log(
+          "Signup failed:",
+          response.data.error || "Something went wrong. Please try again."
+        );
+        Alert.alert(
+          "Signup failed",
+          response.data.error || "Something went wrong. Please try again."
+        );
       }
     } catch (error) {
       if (error.response && error.response.status === 409) {
-        Alert.alert('Signup failed', 'Email already exists. Please use a different email.');
+        Alert.alert(
+          "Signup failed",
+          "Email already exists. Please use a different email."
+        );
       } else {
-        console.error('Error:', error);
-        Alert.alert('Signup failed', 'Something went wrong. Please try again.');
+        console.error("Error:", error);
+        Alert.alert("Signup failed", "Something went wrong. Please try again.");
       }
     }
   };
@@ -152,8 +164,14 @@ export default function SignupScreen({ navigation }) {
             onChangeText={setPassword}
             secureTextEntry={!passwordVisible}
           />
-          <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
-            <Icon name={passwordVisible ? "visibility" : "visibility-off"} size={20} color="#666" />
+          <TouchableOpacity
+            onPress={() => setPasswordVisible(!passwordVisible)}
+          >
+            <Icon
+              name={passwordVisible ? "visibility" : "visibility-off"}
+              size={20}
+              color="#666"
+            />
           </TouchableOpacity>
         </View>
         <TouchableOpacity

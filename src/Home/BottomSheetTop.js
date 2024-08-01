@@ -9,7 +9,7 @@ const BottomSheetTop = ({ progress }) => {
   return (
     <View style={styles.container}>
       <View style={styles.leftView}>
-        <Text style={[styles.leftText, styles.textShadow]}>Target</Text>
+        <Text style={[styles.leftText, styles.textShadow]}>Current Target</Text>
         <Text style={[styles.amount, styles.textShadow]}>₦ 7,000,000</Text>
       </View>
       <View style={styles.centerView} />
@@ -17,7 +17,7 @@ const BottomSheetTop = ({ progress }) => {
         <Text style={[styles.rightText, styles.textShadow]}>Progress</Text>
         <View style={styles.progressBarContainer}>
           <View style={[styles.progressBar, { width: progressBarWidth }]} />
-          <Text style={styles.progressText}>{progress}%</Text>
+          {/* <Text style={styles.progressText}>{progress}%</Text> */}
         </View>
       </View>
     </View>

@@ -17,6 +17,7 @@ import * as SecureStore from "expo-secure-store";
 import axios from "axios";
 import { COLORS } from "../Constant/Constant";
 import { AppContext } from "../../AppContextProvider";
+import { LOGIN_URL, LOGIN_URL_BIOMETRIC } from "../Constant/URL";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -66,7 +67,7 @@ export default function LoginScreen({ navigation }) {
   
           if (storedEmail && token) {
             const response = await axios.post(
-              "http://192.168.43.244:3099/api/auth/biometric-login",
+              LOGIN_URL_BIOMETRIC,
               { email: storedEmail, token }
             );
   
@@ -124,7 +125,7 @@ export default function LoginScreen({ navigation }) {
 
     try {
       const response = await axios.post(
-        "http://192.168.43.244:3099/api/auth/login",
+        LOGIN_URL,
         { email, password }
       );
 

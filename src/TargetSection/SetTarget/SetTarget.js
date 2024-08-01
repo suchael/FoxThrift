@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import {
   View,
   Text,
@@ -15,10 +15,16 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import { COLORS } from "../Constant/Constant";
+import { COLORS } from "../../Constant/Constant";
+import { AppContext } from "../../../AppContextProvider";
 
 const SetTarget = () => {
   const navigation = useNavigation();
+  const { userData } = useContext(AppContext);
+  console.log("userData: ", userData);
+
+  const REGULAR_TAX = 0.022; // (i.e 2.2% )this is the tax for any deposit
+  const END_TARGET_TAX = 0.15; //  (i.e 15% ) This is the tax when users wants to end target befor maturity
 
   const [targetAmount, setTargetAmount] = useState("");
   const [duration, setDuration] = useState(null);
@@ -121,18 +127,26 @@ const SetTarget = () => {
     Keyboard.dismiss();
   };
 
+  const amount_to_pay = parseFloat(depositAmount.replace(/[^0-9.-]+/g, ""));
+  const tax = amount_to_pay * REGULAR_TAX; // This is the tax amount
+  const taxedAmount_To_Pay = tax + amount_to_pay;
   const alertNavigation = () => {
     Alert.alert(
       "Payment Confirmation",
-      `You will be charged ${depositAmount} ${durationType} in order to meet your target amount of ${formatCurrency(
-        targetAmount
-      )}.`,
+      `By clicking OK, you agree to be charged ₦${taxedAmount_To_Pay} from your wallet
+      `,
       [
         { text: "Cancel", style: "cancel" },
         {
           text: "OK",
           onPress: () => {
-            navigation.navigate("DepositScreen"); // Navigate to the payment screen
+            navigation.navigate("DepositScreen", {
+              fullName: userData.userData.fullName,
+              userEmail: userData.userData.email,
+              targetAmount: parseFloat(targetAmount),
+              durationType: durationType,
+              periodicAmount: taxedAmount_To_Pay,
+            });
           },
         },
       ]
@@ -242,7 +256,6 @@ const SetTarget = () => {
                       </Text>
                     </TouchableOpacity>
                   </View>
-
                 </>
               )}
             </Animated.View>
@@ -251,7 +264,6 @@ const SetTarget = () => {
               <Animated.View style={{ opacity: depositAmountOpacity }}>
                 {duration && (
                   <View style={styles.selectedDurationContainer}>
-
                     <Text style={styles.selectedDurationText}>
                       {durationType.charAt(0).toUpperCase() +
                         durationType.slice(1)}{" "}
@@ -265,15 +277,41 @@ const SetTarget = () => {
                   </View>
                 )}
                 <View style={styles.outputContainer}>
-                  <Text style={styles.outputLabel}>Deposit Amount</Text>
-                  <Text style={styles.outputText}>{depositAmount}</Text>
+                  <View>
+                    <Text
+                      style={[
+                        styles.outputLabel,
+                        { color: COLORS.color_darkBlue },
+                      ]}
+                    >
+                      {durationType.charAt(0).toUpperCase() +
+                        durationType.slice(1)}{" "}
+                      Payment of
+                    </Text>
+
+                    <Text
+                      style={[
+                        styles.outputText,
+                        { color: COLORS.color_darkBlue },
+                      ]}
+                    >
+                      ₦{taxedAmount_To_Pay}
+                    </Text>
+                  </View>
                   <Text
                     style={[
                       styles.outputText,
                       { fontWeight: "500", fontSize: 15, marginTop: 20 },
                     ]}
                   >
-                    Note: You are to deposit this amount {durationType}
+                    Note: If you deposit ₦{taxedAmount_To_Pay} {durationType},
+                    you will be able to meet up with your future target of ₦
+                    {targetAmount} in {duration}{" "}
+                    {durationType === "monthly"
+                      ? "months"
+                      : durationType === "weekly"
+                      ? "weeks"
+                      : "days"}
                   </Text>
                 </View>
               </Animated.View>
@@ -432,7 +470,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "bold",
     // color: "red",
-    textAlign: "center"
+    textAlign: "center",
   },
   outputContainer: {
     backgroundColor: COLORS.whiteTextColor,
@@ -441,7 +479,7 @@ const styles = StyleSheet.create({
     elevation: 24,
     padding: 20,
     borderRadius: 10,
-    marginBottom: 20,
+    marginBottom: 50,
   },
   outputLabel: {
     fontSize: 17,
@@ -450,7 +488,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   outputText: {
-    fontSize: 22,
+    fontSize: 25,
     fontWeight: "bold",
     color: COLORS.blackTextColor,
   },

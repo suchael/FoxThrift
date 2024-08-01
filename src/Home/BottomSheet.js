@@ -132,8 +132,8 @@ const BottomSheet = () => {
       <View style={styles.bottomSheetWrapper}>
         <View style={styles.historyWrapper}>
           <View>
-            <Text style={styles.history}>Weekly payment</Text>
-            <Text style={styles.history}>₦ 50,000</Text>
+            <Text style={styles.history}>Type: Weekly payment</Text>
+            <Text style={styles.history}>Amount: ₦ 50,000</Text>
           </View>
           <AntDesign name="barschart" size={26} color="black" />
         </View>
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   history: {
     fontSize: 18,
     fontWeight: "bold",
-    textShadowColor: 'rgba(0, 0, 0, 0.4)',
+    textShadowColor: 'rgba(0, 0, 0, 0.2)',
     textShadowOffset: { width: 3, height: 3 },
     textShadowRadius: 5,
   },

@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { useRoute } from "@react-navigation/native";
-import { COLORS } from "../Constant/Constant";
+import { COLORS } from "../../Constant/Constant";
 
 const TargetHistory = () => {
   const route = useRoute();

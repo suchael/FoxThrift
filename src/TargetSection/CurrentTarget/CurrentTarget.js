@@ -4,13 +4,12 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ScrollView,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { COLORS } from "../Constant/Constant";
 
-const Cashout = () => {
+const CurrentTarget = () => {
   const navigation = useNavigation();
   const route = useRoute();
 
@@ -116,4 +115,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Cashout;
+export default CurrentTarget;
