@@ -58,25 +58,25 @@ export default function LoginScreen({ navigation }) {
         promptMessage: "Authenticate to log in",
         fallbackLabel: "Enter your phone password",
       });
-  
+
       if (auth.success) {
         setAuthenticating(true);
         try {
           const storedEmail = await SecureStore.getItemAsync("email");
           const token = await SecureStore.getItemAsync("token");
-  
+
           if (storedEmail && token) {
-            const response = await axios.post(
-              LOGIN_URL_BIOMETRIC,
-              { email: storedEmail, token }
-            );
-  
+            const response = await axios.post(LOGIN_URL_BIOMETRIC, {
+              email: storedEmail,
+              token,
+            });
+
             if (response.status === 200) {
               const data = response.data;
               setAuthenticating(false);
               setModalVisible(false);
               console.log("Biometric login successful");
-  
+
               navigation.replace("Home");
               setUserData({ userData: data.user });
             } else {
@@ -91,8 +91,12 @@ export default function LoginScreen({ navigation }) {
         } catch (error) {
           if (error.response) {
             if (error.response.status === 401) {
-              console.error("error: Invalid token. Please log in with email and password.")
-              setAuthError("Invalid token. Please log in with email and password.");
+              console.error(
+                "error: Invalid token. Please log in with email and password."
+              );
+              setAuthError(
+                "Invalid token. Please log in with email and password."
+              );
             } else {
               setAuthError("Authentication failed. Please try again.");
             }
@@ -113,9 +117,6 @@ export default function LoginScreen({ navigation }) {
       );
     }
   };
-  
-  
-  
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -124,27 +125,27 @@ export default function LoginScreen({ navigation }) {
     }
 
     try {
-      const response = await axios.post(
-        LOGIN_URL,
-        { email, password }
-      );
+      // const response = await axios.post(LOGIN_URL, { email, password });
 
-      if (response.status === 401) {
-        alert("Invalid email or token");
-        console.log("invalid email or token")
-        return;
-      }
-      if (response.status === 200) {
-        const data = response.data;
-        console.log("Login successful:", data);
-        console.log("Token: ", data.token);
+      // if (response.status === 401) {
+      //   alert("Invalid email or token");
+      //   console.log("invalid email or token");
+      //   return;
+      // }
+      if (
+        mydata.userData.email === email &&
+        mydata.userData.password === password
+      ) {
+        // const data = response.data;
+        // console.log("Login successful:", data);
+        // console.log("Token: ", data.token);
 
-        await SecureStore.setItemAsync("email", email);
-        await SecureStore.setItemAsync("token", data.token); // Store the token as a string
-        await SecureStore.setItemAsync("user", JSON.stringify(data.user)); // Store the user data as a string
+        // await SecureStore.setItemAsync("email", email);
+        // await SecureStore.setItemAsync("token", data.token); // Store the token as a string
+        // await SecureStore.setItemAsync("user", JSON.stringify(data.user)); // Store the user data as a string
 
         navigation.replace("Home");
-        setUserData({ userData: data.user });
+        setUserData({ userData: mydata.userData });
       } else {
         console.log(
           "Login failed:",
@@ -165,11 +166,13 @@ export default function LoginScreen({ navigation }) {
           // Handle other status codes
           console.log(
             "Login failed:",
-            error.response.data.error || "Something went wrong. Please try again."
+            error.response.data.error ||
+              "Something went wrong. Please try again."
           );
           Alert.alert(
             "Login failed",
-            error.response.data.error || "Something went wrong. Please try again."
+            error.response.data.error ||
+              "Something went wrong. Please try again."
           );
         }
       } else {
@@ -179,12 +182,21 @@ export default function LoginScreen({ navigation }) {
       }
     }
   };
-  
 
   return (
     <ScrollView contentContainerStyle={styles.contWrapper}>
       <Animatable.View animation="fadeInUpBig" style={styles.container}>
         <Text style={styles.title}>Welcome Back!</Text>
+        <Text
+          style={{
+            textAlign: "center",
+            fontWeight: "bold",
+            fontSize: 12,
+            color: "red",
+          }}
+        >
+          APK build for Mayowa Lala
+        </Text>
         <View style={styles.inputContainer}>
           <Icon name="email" size={20} color="#666" style={styles.inputIcon} />
           <TextInput
@@ -281,6 +293,21 @@ export default function LoginScreen({ navigation }) {
     </ScrollView>
   );
 }
+
+const mydata = {
+  userData: {
+    accountNumber: "3000055485",
+    balance: 0,
+    bankName: "Wema bank",
+    createdAt: "2024-08-14 09:28:37",
+    email: "succhycomic22@gmail.com",
+    fullName: "suchael ahmson",
+    id: 4,
+    password: "123456",
+    phoneNumber: "09031143122",
+    username: "suchael_ahmson",
+  },
+};
 
 const styles = StyleSheet.create({
   contWrapper: {

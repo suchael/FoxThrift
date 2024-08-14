@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
-import { COLORS } from "../Constant/Constant";
+import { COLORS } from "../../Constant/Constant";
 
 const banks = [
   "Access Bank",

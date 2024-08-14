@@ -18,10 +18,10 @@ import SetTarget from "./src/TargetSection/SetTarget/SetTarget";
 import { COLORS } from "./src/Constant/Constant";
 import Home from "./src/Home/Home";
 import DepositScreen from "./src/TargetSection/SetTarget/DepositScreen";
-import CurrentTarget from "./src/CurrentTarget/CurrentTarget";
+// import CurrentTarget from "./src/CurrentTarget/CurrentTarget";
 import Profile from "./src/Profile/Profile";
-import AccountDetails from "./src/CurrentTarget/AccountDetails";
-import TargetDetails from "./src/CurrentTarget/TargetDetails";
+import AccountDetails from "./src/TargetSection/CurrentTarget/AccountDetails";
+import TargetDetails from "./src/TargetSection/CurrentTarget/TargetDetails";
 import LoginScreen from "./src/LoginSignUp/Login";
 import SignupScreen from "./src/LoginSignUp/Signup";
 import DataPlanCard from "./src/DataPlanCard/DataPlanCard";
@@ -30,6 +30,7 @@ import ResetPassword from "./src/LoginSignUp/ResetPassword";
 import { AppContextProvider } from "./AppContextProvider";
 import All_Target_History from "./src/TargetSection/All_Target_History/All_Target_History";
 import TargetHistory from "./src/TargetSection/CurrentTarget/TargetHistory";
+import CurrentTarget from "./src/TargetSection/CurrentTarget/CurrentTarget";
 
 const Stack = createStackNavigator();
 const App = () => {

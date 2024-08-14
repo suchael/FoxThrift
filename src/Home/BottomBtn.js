@@ -26,7 +26,7 @@ const BottomBtn = () => {
   };
 
   const handleWhatsApp = () => {
-    const phoneNumber = "+2349015936616"; // WhatsApp phone number
+    const phoneNumber = "+2349031143122"; // WhatsApp phone number
     const whatsappUrl = `whatsapp://send?phone=${phoneNumber}`;
 
     Linking.canOpenURL(whatsappUrl)

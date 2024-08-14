@@ -104,6 +104,7 @@ const Profile = ({ route, navigation }) => {
         </TouchableOpacity>
       )}
 
+        <Text style={[styles.buttonText, {color: COLORS.color_darkBlue, textAlign: "center"}]}>Powered by Eculis Code</Text>
       <TouchableOpacity style={styles.button} onPress={handleLogout}>
         <Text style={styles.buttonText}>Logout</Text>
       </TouchableOpacity>

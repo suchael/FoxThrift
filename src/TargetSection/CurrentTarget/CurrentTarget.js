@@ -7,7 +7,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { COLORS } from "../Constant/Constant";
+import { COLORS } from "../../Constant/Constant";
 
 const CurrentTarget = () => {
   const navigation = useNavigation();

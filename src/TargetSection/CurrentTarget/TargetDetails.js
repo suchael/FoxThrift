@@ -8,7 +8,7 @@ import {
   Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { COLORS } from "../Constant/Constant";
+import { COLORS } from "../../Constant/Constant";
 
 const DummyData = [
     { label: "Target Amount:", value: "₦12,000" },
