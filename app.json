@@ -7,9 +7,9 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/FoxSplahscreen.jpg",
+      "image": "./assets/icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#004E89"
+      "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -25,6 +25,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "de12501f-aa68-4ec5-819d-4fded5a3b0c3"
+      }
     }
   }
 }
