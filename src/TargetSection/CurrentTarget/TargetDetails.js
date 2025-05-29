@@ -6,28 +6,30 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { COLORS } from "../../Constant/Constant";
 
 const DummyData = [
-    { label: "Target Amount:", value: "₦12,000" },
-    { label: "Start date:", value: "May 1st, 2024" },
-    { label: "End date:", value: "May 30th, 2024" },
-    { label: "Accumulated amount:", value: "₦4,000" },
-    { label: "Daily payment of:", value: "₦1,000" },
-  ];
+  { label: "Target Amount", value: "₦12,000" },
+  { label: "Start Date", value: "May 1st, 2024" },
+  { label: "End Date", value: "May 30th, 2024" },
+  { label: "Accumulated Amount", value: "₦4,000" },
+  { label: "Daily Payment", value: "₦1,000" },
+];
+
 const TargetDetails = () => {
   const navigation = useNavigation();
 
   const handlePay = () => {
-    navigation.navigate("PaymentScreen"); // Replace 'PaymentScreen' with the actual screen name
+    navigation.navigate("PaymentScreen"); // Replace with the actual screen name
   };
 
   const handleCashout = () => {
     Alert.alert(
-      "Notification",
-      "Cashing out means you want to end the current target",
+      "Cashout Confirmation",
+      "Cashing out will end the current target. Do you wish to proceed?",
       [
         {
           text: "Cancel",
@@ -35,34 +37,31 @@ const TargetDetails = () => {
         },
         {
           text: "OK",
-          onPress: () => navigation.navigate("Cashout", {
-            amount: DummyData[0].value
-          }), // Replace 'Cashout' with the actual screen name
+          onPress: () =>
+            navigation.navigate("Cashout", { amount: DummyData[0].value }), // Replace 'Cashout' with actual screen name
         },
       ],
       { cancelable: false }
     );
   };
- 
+
   return (
-    <ScrollView contentContainerStyle={{ flex: 1 }}>
+    <ScrollView contentContainerStyle={styles.scrollViewContent}>
       <View style={styles.container}>
+        <Text style={styles.headerText}>Current Target Details</Text>
         {DummyData.map((data, index) => (
           <View style={styles.detailRow} key={index}>
             <Text style={styles.label}>{data.label}:</Text>
             <Text style={styles.value}>{data.value}</Text>
           </View>
         ))}
-        <TouchableOpacity style={styles.payButton} onPress={handlePay}>
-          <Text style={styles.buttonText}>Pay now</Text>
-        </TouchableOpacity>
         <View style={styles.bottomBtnWrapper}>
-          <TouchableOpacity
-            style={styles.cashoutButton}
-            onPress={handleCashout}
-          >
+          <TouchableOpacity style={styles.cashoutButton} onPress={handleCashout}>
             <Text style={styles.buttonText}>Cashout</Text>
           </TouchableOpacity>
+        <TouchableOpacity style={styles.payButton} onPress={handlePay}>
+          <Text style={styles.buttonText}>Pay Now</Text>
+        </TouchableOpacity>
         </View>
       </View>
     </ScrollView>
@@ -70,56 +69,88 @@ const TargetDetails = () => {
 };
 
 const styles = StyleSheet.create({
+  scrollViewContent: {
+    flexGrow: 1,
+    backgroundColor: "white",
+  },
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#f8f8f8",
     justifyContent: "center",
-    alignItems: "center",
+  },
+  headerText: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: COLORS.color_darkBlue,
+    textAlign: "center",
+    marginBottom: 30,
   },
   detailRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "100%",
-    marginBottom: 20,
+    alignItems: "center",
+    backgroundColor: "#fff",
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    marginVertical: 8,
+    borderRadius: 6,
+    borderColor: "#E0E0E0",
+    borderWidth: 0.3,
+    // shadowColor: "#000",
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.1,
+    // shadowRadius: 4,
+    elevation: 3, // Android shadow
   },
   label: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 16,
+    fontWeight: "600",
     color: "#333",
   },
   value: {
-    fontSize: 18,
+    fontSize: 16,
     color: "#555",
   },
   payButton: {
-    height: 50,
-    width: "60%",
     backgroundColor: COLORS.color_darkBlue,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 25,
-    marginBottom: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    alignSelf: "center",
+    marginTop: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 4,
   },
   cashoutButton: {
-    height: 50,
     backgroundColor: "#ff5c5c",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 25,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    marginTop: 10,
+    alignSelf: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 4,
   },
   bottomBtnWrapper: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    paddingHorizontal: 20,
-    paddingVertical: 20,
+    marginTop: 30,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   buttonText: {
-    fontSize: 18,
+    fontSize: 17,
     color: "#fff",
-    fontWeight: "bold",
+    fontWeight: "600",
   },
 });
 

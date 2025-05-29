@@ -187,16 +187,7 @@ export default function LoginScreen({ navigation }) {
     <ScrollView contentContainerStyle={styles.contWrapper}>
       <Animatable.View animation="fadeInUpBig" style={styles.container}>
         <Text style={styles.title}>Welcome Back!</Text>
-        <Text
-          style={{
-            textAlign: "center",
-            fontWeight: "bold",
-            fontSize: 12,
-            color: "red",
-          }}
-        >
-          APK build for Mayowa Lala
-        </Text>
+        
         <View style={styles.inputContainer}>
           <Icon name="email" size={20} color="#666" style={styles.inputIcon} />
           <TextInput
@@ -301,11 +292,11 @@ const mydata = {
     bankName: "Wema bank",
     createdAt: "2024-08-14 09:28:37",
     email: "succhycomic22@gmail.com",
-    fullName: "suchael ahmson",
+    fullName: "Success Ahmed",
     id: 4,
     password: "123456",
     phoneNumber: "09031143122",
-    username: "suchael_ahmson",
+    username: "Success Ahmed",
   },
 };
 

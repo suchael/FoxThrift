@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useCallback } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import * as LocalAuthentication from "expo-local-authentication";
@@ -13,42 +13,51 @@ const Profile = ({ route, navigation }) => {
 
   useEffect(() => {
     const checkBiometrics = async () => {
-      const has_Fingerprint_Hardware = await LocalAuthentication.hasHardwareAsync();
-      const user_has_enroll_biometric = await LocalAuthentication.isEnrolledAsync();
-      console.log("user_has_enroll_biometric: ", user_has_enroll_biometric);
-      setBiometricEnrolled(has_Fingerprint_Hardware && user_has_enroll_biometric);
+      try {
+        const hasHardware = await LocalAuthentication.hasHardwareAsync();
+        const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+        setBiometricEnrolled(hasHardware && isEnrolled);
+      } catch (error) {
+        console.error("Error checking biometric availability: ", error);
+        Alert.alert("Error", "Failed to check biometric availability.");
+      }
     };
     checkBiometrics();
   }, []);
 
-  const handleBiometricRegister = async () => {
-    const hasHardware = await LocalAuthentication.hasHardwareAsync();
-    const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+  const handleBiometricRegister = useCallback(async () => {
+    try {
+      const hasHardware = await LocalAuthentication.hasHardwareAsync();
+      const isEnrolled = await LocalAuthentication.isEnrolledAsync();
 
-    if (!hasHardware) {
-      Alert.alert("Biometric hardware not available");
-      return;
+      if (!hasHardware) {
+        Alert.alert("Error", "Biometric hardware not available on this device.");
+        return;
+      }
+
+      if (!isEnrolled) {
+        Alert.alert("Error", "Please enroll your biometrics in the device settings.");
+        return;
+      }
+
+      const biometricAuth = await LocalAuthentication.authenticateAsync({
+        promptMessage: "Register Biometrics",
+      });
+
+      if (biometricAuth.success) {
+        await SecureStore.setItemAsync("biometricEnrolled", "true");
+        Alert.alert("Success", "Biometric registration was successful.");
+        setBiometricEnrolled(true);
+      } else {
+        Alert.alert("Failed", "Biometric registration was not successful.");
+      }
+    } catch (error) {
+      console.error("Error during biometric registration: ", error);
+      Alert.alert("Error", "Failed to register biometrics.");
     }
+  }, []);
 
-    if (!isEnrolled) {
-      Alert.alert("Please enroll your biometrics in the device settings first");
-      return;
-    }
-
-    const biometricAuth = await LocalAuthentication.authenticateAsync({
-      promptMessage: "Register Biometrics",
-    });
-
-    if (biometricAuth.success) {
-      await SecureStore.setItemAsync("biometricEnrolled", "true");
-      Alert.alert("Biometric registration successful");
-      setBiometricEnrolled(true);
-    } else {
-      Alert.alert("Biometric registration failed");
-    }
-  };
-
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     Alert.alert(
       "Logout Confirmation",
       "Are you sure you want to logout?",
@@ -61,52 +70,55 @@ const Profile = ({ route, navigation }) => {
         {
           text: "Logout",
           onPress: async () => {
-            await SecureStore.deleteItemAsync("email");
-            await SecureStore.deleteItemAsync("token");
-            await SecureStore.deleteItemAsync("user");
-            await SecureStore.deleteItemAsync("biometricEnrolled");
-            navigation.replace("LoginScreen");
+            try {
+              await SecureStore.deleteItemAsync("email");
+              await SecureStore.deleteItemAsync("token");
+              await SecureStore.deleteItemAsync("user");
+              await SecureStore.deleteItemAsync("biometricEnrolled");
+              navigation.replace("LoginScreen");
+            } catch (error) {
+              console.error("Error during logout: ", error);
+              Alert.alert("Error", "Failed to logout. Please try again.");
+            }
           },
         },
       ],
       { cancelable: false }
     );
-  };
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Your Profile</Text>
+
       <View style={styles.profileInfo}>
         <Text style={styles.label}>Full Name:</Text>
-        <Text style={styles.value}>{userData.userData.fullName}</Text>
+        <Text style={styles.value}>{userData?.userData?.fullName || "N/A"}</Text>
       </View>
       <View style={styles.profileInfo}>
         <Text style={styles.label}>Username:</Text>
-        <Text style={styles.value}>{userData.userData.username}</Text>
+        <Text style={styles.value}>{userData?.userData?.username || "N/A"}</Text>
       </View>
       <View style={styles.profileInfo}>
         <Text style={styles.label}>Email:</Text>
-        <Text style={styles.value}>{userData.userData.email}</Text>
+        <Text style={styles.value}>{userData?.userData?.email || "N/A"}</Text>
       </View>
       <View style={styles.profileInfo}>
         <Text style={styles.label}>Phone Number:</Text>
-        <Text style={styles.value}>{userData.userData.phoneNumber}</Text>
+        <Text style={styles.value}>{userData?.userData?.phoneNumber || "N/A"}</Text>
       </View>
 
       {!biometricEnrolled && (
-        <TouchableOpacity
-          style={styles.biometricButton}
-          onPress={handleBiometricRegister}
-        >
-          <Icon name="fingerprint" size={35} />
-
+        <TouchableOpacity style={styles.biometricButton} onPress={handleBiometricRegister}>
+          <Icon name="fingerprint" size={35} color={COLORS.primaryColor} />
           <Text style={styles.biometricText}>Set Up Biometrics</Text>
         </TouchableOpacity>
       )}
 
-        <Text style={[styles.buttonText, {color: COLORS.color_darkBlue, textAlign: "center"}]}>Powered by Eculis Code</Text>
-      <TouchableOpacity style={styles.button} onPress={handleLogout}>
-        <Text style={styles.buttonText}>Logout</Text>
+      {/* <Text style={styles.poweredByText}>Powered by Eculis Code</Text> */}
+
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutButtonText}>Logout</Text>
       </TouchableOpacity>
     </View>
   );
@@ -124,47 +136,56 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
+    color: COLORS.primaryColor,
   },
   profileInfo: {
-    marginBottom: 20,
+    marginBottom: 15,
+    paddingHorizontal: 10,
   },
   label: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
+    color: COLORS.darkText,
   },
   value: {
-    fontSize: 18,
-    color: "#555",
+    fontSize: 16,
+    color: COLORS.lightText,
   },
   biometricButton: {
-    backgroundColor: COLORS.whiteTextColor,
-    borderWidth: 3,
-    borderColor: COLORS.color_darkBlue,
-    padding: 12,
-    borderRadius: 5,
+    flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
-    elevation: 10,
+    justifyContent: "center",
+    paddingVertical: 12,
+    backgroundColor: COLORS.lightGrey,
+    borderRadius: 10,
+    marginVertical: 20,
+    elevation: 5,
   },
   biometricText: {
-    // color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+    marginLeft: 10,
+    color: COLORS.primaryColor,
   },
-  button: {
-    position: "absolute",
-    left: 10,
-    right: 10,
-    bottom: 10,
+  poweredByText: {
+    fontSize: 14,
+    color: COLORS.color_darkBlue,
+    textAlign: "center",
+    marginVertical: 10,
+  },
+  logoutButton: {
     backgroundColor: COLORS.color_darkBlue,
-    padding: 12,
-    borderRadius: 40,
+    padding: 10,
+    borderRadius: 30,
     alignItems: "center",
-    marginTop: 20,
+    position: "absolute",
+    left: 20,
+    right: 20,
+    bottom: 20,
   },
-  buttonText: {
-    color: "#fff",
+  logoutButtonText: {
     fontSize: 16,
+    color: COLORS.whiteTextColor,
     fontWeight: "bold",
   },
 });

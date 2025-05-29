@@ -17,6 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 
 import { COLORS } from "../../Constant/Constant";
 import { AppContext } from "../../../AppContextProvider";
+import { Image } from "react-native";
 
 const SetTarget = () => {
   const navigation = useNavigation();
@@ -158,6 +159,7 @@ const SetTarget = () => {
       <View style={styles.container}>
         {!showDepositOptions && (
           <View>
+            {/* <Image src={{ uri: "../" }} /> */}
             <Text style={styles.header}>Welcome to FoxThrift!</Text>
             <Text style={styles.subHeader}>Now set your target</Text>
 

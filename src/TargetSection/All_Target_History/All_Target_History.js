@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons"; // Assuming you're using Expo
 import { COLORS } from "../../Constant/Constant";
@@ -34,10 +28,8 @@ const All_Target_History = () => {
           date: "Monday, 10th Oct, 2021",
           status: "Missed",
         },
-        // Add more history entries as needed
       ],
     },
-    // Add more target details as needed
   ];
 
   return (
@@ -49,32 +41,24 @@ const All_Target_History = () => {
           onPress={() => navigation.navigate("TargetHistory", { target })}
         >
           <View style={styles.targetInfo}>
-            <Text style={[styles.targetText, {color: COLORS.color_darkBlue}]}>
-              Target:{" "}
-              <Text style={styles.targetTextChild}>
-                {target.amount}
-              </Text>
+            <Text style={[styles.targetTitle, { color: COLORS.color_darkBlue }]}>
+              Target Amount:{" "}
+              <Text style={styles.targetAmount}>{target.amount}</Text>
             </Text>
             <Text style={styles.targetText}>
               Start Date:{" "}
-              <Text style={styles.targetTextChild}>
-                {target.startDate}
-              </Text>
+              <Text style={styles.targetTextChild}>{target.startDate}</Text>
             </Text>
             <Text style={styles.targetText}>
               End Date:{" "}
-              <Text style={styles.targetTextChild}>
-                {target.endDate}
-              </Text>
+              <Text style={styles.targetTextChild}>{target.endDate}</Text>
             </Text>
-            <Text style={[styles.targetText, {color: COLORS.color_darkBlue}]}>
+            <Text style={styles.targetText}>
               Maturity Date:{" "}
-              <Text style={styles.targetTextChild}>
-                {target.maturityDate}
-              </Text>
+              <Text style={styles.targetTextChild}>{target.maturityDate}</Text>
             </Text>
           </View>
-          <AntDesign name="arrowright" size={24} color={COLORS.color_darkBlue}/>
+          <AntDesign name="arrowright" size={24} color={COLORS.color_darkBlue} />
         </TouchableOpacity>
       ))}
     </ScrollView>
@@ -83,35 +67,51 @@ const All_Target_History = () => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 10,
     backgroundColor: COLORS.whiteTextColor,
-    flex: 1,
+    flexGrow: 1,
   },
   targetCard: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 15,
-    backgroundColor: "#fafafa",
-    borderRadius: 10,
+    padding: 20,
+    backgroundColor: "#f8f9fa",
+    borderRadius: 12,
     marginVertical: 10,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 15,
-    borderWidth: 0.5,
-    // borderColor: COLORS.color_darkBlue,
+    shadowRadius: 6,
+    elevation: 5,
+    borderWidth: 0.8,
+    borderColor: "#e0e0e0",
   },
   targetInfo: {
     flex: 1,
   },
-  targetText: {
+  targetTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    marginBottom: 10,
+  },
+  targetAmount: {
+    fontWeight: "600",
     fontSize: 18,
-    fontWeight: "bold",
+    color: COLORS.color_primary, // Accent color for amount
+  },
+  targetText: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: COLORS.color_darkGray,
     marginBottom: 5,
   },
-  targetTextChild: { fontWeight: "500", fontSize: 16, color: "black" },
+  targetTextChild: {
+    fontWeight: "500",
+    fontSize: 15,
+    color: COLORS.color_black, // Subtle color for dates and extra details
+  },
 });
 
 export default All_Target_History;
