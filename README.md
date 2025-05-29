@@ -23,7 +23,13 @@ FoxThrift is a modern React Native fintech mobile application designed to digiti
 - **Local Authentication** for biometric support
 - **Axios** for API requests
 
-## 📸 Screenshots
 
-![Login Screenshot](./assets/login.jpg)
-![Homepage Screenshot](./assets/Home.jpg)
+<h3>📸 Screenshots</h3>
+
+<p align="center">
+  <img src="./assets/login.jpg" alt="Login Screenshot" width="300" />
+</p>
+
+<p align="center">
+  <img src="./assets/Home.jpg" alt="Homepage Screenshot" width="300" />
+</p>
